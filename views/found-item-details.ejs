@@ -1,5 +1,9 @@
 <%- include('partials/header') %>
 
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="flash flash-error"><strong>!</strong> <%= error %></div>
+<% } %>
+
 <div class="page-head">
   <div>
     <h1><%= item.itemName %></h1>
@@ -49,6 +53,68 @@
     <h3>Description</h3>
     <p><%= item.description %></p>
   </div>
+</section>
+
+<section class="relation-section">
+  <h2>Claims for this item</h2>
+
+  <% if (item.status === 'Returned') { %>
+    <div class="flash flash-notice"><strong>i</strong> This item has been returned. No new claims can be submitted.</div>
+  <% } else { %>
+    <form action="/found-items/<%= item._id %>/claims" method="POST" class="form inline-form" novalidate>
+      <div class="field">
+        <label for="claimedBy">Claiming student <span class="req">*</span></label>
+        <select id="claimedBy" name="claimedBy" required>
+          <option value="">— Select a student —</option>
+          <% students.forEach(function(s) { %>
+            <option value="<%= s._id %>"><%= s.fullName %> · <%= s.department %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="field">
+        <label for="reason">Why is this item yours? <span class="req">*</span></label>
+        <textarea id="reason" name="reason" rows="3" required placeholder="Explain how you can identify this item as yours (at least 5 characters)"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn">Submit claim</button>
+      </div>
+    </form>
+  <% } %>
+
+  <% if (claims.length === 0) { %>
+    <p class="muted">No claims have been submitted for this item yet.</p>
+  <% } else { %>
+    <ul class="claims-list">
+      <% claims.forEach(function(c) { %>
+        <li class="claim-item">
+          <div class="claim-head">
+            <strong><%= c.claimedBy ? c.claimedBy.fullName : 'Unknown student' %></strong>
+            <span class="badge badge-<%= c.status === 'Approved' ? 'ok' : (c.status === 'Rejected' ? 'muted' : 'warn') %>"><%= c.status %></span>
+          </div>
+          <p class="claim-reason"><%= c.reason %></p>
+          <p class="muted small">Submitted <%- include('partials/date', { d: c.createdAt }) %></p>
+
+          <% if (c.status === 'Pending' && item.status !== 'Returned') { %>
+            <div class="claim-actions">
+              <p class="muted small">Only <%= item.reportedBy ? item.reportedBy.fullName : 'the reporter' %> may approve or reject (verified on the server).</p>
+              <form action="/claims/<%= c._id %>/status" method="POST" class="inline">
+                <input type="hidden" name="_method" value="PATCH" />
+                <input type="hidden" name="status" value="Approved" />
+                <input type="hidden" name="actingStudentId" value="<%= item.reportedBy ? item.reportedBy._id : '' %>" />
+                <button type="submit" class="btn btn-small">Approve</button>
+              </form>
+              <form action="/claims/<%= c._id %>/status" method="POST" class="inline">
+                <input type="hidden" name="_method" value="PATCH" />
+                <input type="hidden" name="status" value="Rejected" />
+                <input type="hidden" name="actingStudentId" value="<%= item.reportedBy ? item.reportedBy._id : '' %>" />
+                <button type="submit" class="btn btn-small btn-outline">Reject</button>
+              </form>
+            </div>
+          <% } %>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
 </section>
 
 <%- include('partials/footer') %>

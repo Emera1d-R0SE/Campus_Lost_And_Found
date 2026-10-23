@@ -1,5 +1,9 @@
 <%- include('partials/header') %>
 
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="flash flash-error"><strong>!</strong> <%= error %></div>
+<% } %>
+
 <div class="page-head">
   <div>
     <h1>Found Items</h1>
@@ -17,14 +21,14 @@
     <label for="category">Category</label>
     <select id="category" name="category">
       <option value="">All categories</option>
-      <option value="Electronics" <%= filters.category === 'Electronics' ? 'selected' : '' %>>Electronics</option>
-      <option value="Accessories" <%= filters.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
-      <option value="Clothing" <%= filters.category === 'Clothing' ? 'selected' : '' %>>Clothing</option>
-      <option value="Documents" <%= filters.category === 'Documents' ? 'selected' : '' %>>Documents</option>
-      <option value="Keys" <%= filters.category === 'Keys' ? 'selected' : '' %>>Keys</option>
-      <option value="Wallet" <%= filters.category === 'Wallet' ? 'selected' : '' %>>Wallet</option>
-      <option value="Bag" <%= filters.category === 'Bag' ? 'selected' : '' %>>Bag</option>
-      <option value="Other" <%= filters.category === 'Other' ? 'selected' : '' %>>Other</option>
+      <option value="Electronics"  <%= filters.category === 'Electronics'  ? 'selected' : '' %>>Electronics</option>
+      <option value="Accessories"  <%= filters.category === 'Accessories'  ? 'selected' : '' %>>Accessories</option>
+      <option value="Clothing"     <%= filters.category === 'Clothing'     ? 'selected' : '' %>>Clothing</option>
+      <option value="Documents"    <%= filters.category === 'Documents'    ? 'selected' : '' %>>Documents</option>
+      <option value="Keys"         <%= filters.category === 'Keys'         ? 'selected' : '' %>>Keys</option>
+      <option value="Wallet"       <%= filters.category === 'Wallet'       ? 'selected' : '' %>>Wallet</option>
+      <option value="Bag"          <%= filters.category === 'Bag'          ? 'selected' : '' %>>Bag</option>
+      <option value="Other"        <%= filters.category === 'Other'        ? 'selected' : '' %>>Other</option>
     </select>
   </div>
   <div class="field">
@@ -62,12 +66,12 @@
         <p class="muted small">
           Reported by:
           <% if (it.reportedBy) { %>
-            <a href="/students/<%= it.reportedBy._id %>"><%= it.reportedBy.fullName %></a>
+            <%= it.reportedBy.fullName %>
           <% } else { %>
             Unknown student
           <% } %>
         </p>
-        <span class="card-link">View details →</span>
+        <span class="card-link">View &amp; claim →</span>
       </a>
     <% }) %>
   </div>

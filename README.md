@@ -1,166 +1,164 @@
-# CampusFind — Campus Lost & Found Management System (Phase 1)
+# CampusFind — Campus Lost & Found Management System
 
-A simple web application where students can register a profile, report items they
-have lost, and register items they have found on campus. All data is stored in
-**MongoDB Atlas** and pages are rendered dynamically with **EJS**.
-
-This repository contains **Phase 1** only: student profiles, lost-item reports,
-found-item reports, dynamic rendering, validation and error handling. Claims,
-approval and the return workflow are part of Phase 2 and are intentionally not
-included here.
+A web application where students register profiles, report lost/found items, submit
+claims, and complete the full return workflow. Data is stored in **MongoDB Atlas**;
+pages are rendered dynamically with **EJS**.
 
 ---
 
-## 1. Project overview
+## Tech stack
 
-CampusFind replaces ad-hoc "lost it / found it" messages in class groups with a
-small, structured record system. In Phase 1 a student can:
+Node.js · Express.js · EJS · MongoDB Atlas · Mongoose · dotenv · method-override
 
-- Register a profile (full name, college email, department, contact number).
-- View any student's profile on a dynamic route `/students/:id`.
-- Report a lost item (name, category, description, last-seen location, date lost).
-- Report a found item (name, category, description, found location, date found).
-- Browse and search/filter the lost-items and found-items lists.
-- Open the full details of any single report.
+---
 
-Every record shown on the site comes from MongoDB — nothing is hard-coded into
-the EJS templates.
-
-## 2. Tech stack
-
-- **Node.js** — runtime
-- **Express.js** — web framework
-- **EJS** — server-side templating
-- **MongoDB Atlas** — database (cloud)
-- **Mongoose** — ODM / data models
-- **dotenv** — environment variables
-- HTML5 + CSS3 — frontend (no frameworks, no Tailwind, no React)
-
-## 3. Installation
+## Quick start
 
 ```bash
-# 1. Clone or copy the project folder
 cd campus-lost-found
-
-# 2. Install dependencies
 npm install
-
-# 3. Configure environment (see section 5)
-#    Copy .env.example to .env and fill in your MongoDB Atlas connection string
-cp .env.example .env      # on Windows PowerShell: Copy-Item .env.example .env
-
-# 4. Start the server
+cp .env.example .env      # PowerShell: Copy-Item .env.example .env
+# edit .env — set MONGO_URI (see below)
 npm start
-#    or for development with auto-reload:
-npm run dev
 ```
 
-Then open http://localhost:3000 in your browser.
+Open http://localhost:3000
 
-> Node.js 18+ is recommended. Make sure your IP is allow-listed in your MongoDB
-> Atlas project (Network Access).
+---
 
-## 4. MongoDB Atlas configuration
+## Environment variables
 
-1. Create a free cluster at https://www.mongodb.com/atlas.
-2. Add a database user (Database Access → Add new user).
-3. Allow your IP in Network Access (or `0.0.0.0/0` for development).
-4. Click **Connect → Drivers** and copy the connection string. It looks like:
-   `mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority`
-5. Insert the database name `campusLostFound` into the path (see `.env.example`).
-   MongoDB creates the database automatically on the first write.
+| Variable    | Required | Description |
+|-------------|----------|-------------|
+| `MONGO_URI` | yes      | MongoDB Atlas connection string including database name `campusLostFound` |
+| `PORT`      | no       | Port (default 3000) |
 
-## 5. Environment variables
-
-All configuration lives in a `.env` file at the project root (never committed).
-
-| Variable   | Required | Description                                                       |
-| ---------- | -------- | ---------------------------------------------------------------- |
-| `MONGO_URI`| yes      | MongoDB Atlas connection string, with database `campusLostFound`|
-| `PORT`     | no       | Port to listen on (defaults to 3000)                             |
-
-Example (see `.env.example`):
-
+`.env` format:
 ```
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/campusLostFound?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/campusLostFound?retryWrites=true&w=majority
 PORT=3000
 ```
 
-## 6. Phase 1 route list
+Get the connection string from Atlas → Connect → Drivers.
 
-| Method | Route             | Purpose                                                       |
-| ------ | ----------------- | ------------------------------------------------------------- |
-| GET    | `/`               | Home page with links to all sections                          |
-| GET    | `/students`       | List all registered students                                   |
-| GET    | `/students/new`   | Show the student registration form                             |
-| POST   | `/students`       | Create a student profile                                       |
-| GET    | `/students/:id`   | Display one student's profile (with their reported items)      |
-| GET    | `/lost-items`     | List lost-item reports (with search/filter)                   |
-| GET    | `/lost-items/new` | Show the lost-item report form                                 |
-| POST   | `/lost-items`     | Create a lost-item report                                      |
-| GET    | `/lost-items/:id` | Display one lost-item report                                  |
-| GET    | `/found-items`    | List found-item reports (with search/filter)                  |
-| GET    | `/found-items/new`| Show the found-item report form                                |
-| POST   | `/found-items`    | Create a found-item report                                     |
-| GET    | `/found-items/:id`| Display one found-item report                                  |
+---
 
-## 7. Database relationships
+## Full route list
 
-The schema uses Mongoose references so a student is linked to the items they
-report, and an item is linked back to the student who reported it.
+### Pages / navigation
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| GET | `/` | Home page |
+| GET | `/students` | List all students |
+| GET | `/students/new` | Registration form |
+| GET | `/students/:id` | Student profile + their reported items |
+| GET | `/lost-items` | Lost items list (search/filter) |
+| GET | `/lost-items/new` | Lost-item report form |
+| GET | `/lost-items/:id` | Lost-item detail |
+| GET | `/found-items` | Found items list (search/filter) |
+| GET | `/found-items/new` | Found-item report form |
+| GET | `/found-items/:id` | Found-item detail **+ claims + claim form** |
+
+### Actions (form submissions)
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| POST | `/students` | Create student profile |
+| POST | `/lost-items` | Create lost-item report |
+| POST | `/found-items` | Create found-item report |
+| POST | `/found-items/:id/claims` | Submit a claim (Phase 2) |
+| PATCH | `/claims/:id/status` | Approve or reject a claim (Phase 2) |
+| PATCH | `/found-items/:id/status` | Update item status — reporter only (Phase 2) |
+
+> HTML forms use a hidden `_method` field (`method-override`) to send PATCH from a
+> POST form.
+
+---
+
+## Database relationships
 
 ```
-Student (1) ──< LostItem (many)     reportedBy: ObjectId -> Student._id
-Student (1) ──< FoundItem (many)   reportedBy: ObjectId -> Student._id
+Student (1) ──< LostItem  (many)   reportedBy  → Student._id
+Student (1) ──< FoundItem (many)   reportedBy  → Student._id
+FoundItem (1) ──< Claim (many)     foundItemId → FoundItem._id
+Student (1) ──< Claim (many)       claimedBy   → Student._id
 ```
 
-- **Student** — `_id` is a MongoDB ObjectId (never the student's name). Fields:
-  `fullName`, `email` (unique), `department`, `contactNumber`.
-- **LostItem** — `itemName`, `category`, `description`, `lastSeenLocation`,
-  `dateLost`, `status` (default `Lost`), `reportedBy` (ref `Student`).
-- **FoundItem** — `itemName`, `category`, `description`, `foundLocation`,
-  `dateFound`, `status` (default `Available`), `reportedBy` (ref `Student`).
+### Models
 
-The "one student → many items" relationship is read with Mongoose's
-`populate()` (e.g. `LostItem.find().populate('reportedBy')`) so each item's card
-and detail page shows the reporting student's name, which links to their
-profile. The reverse direction (a student's profile lists their reported items)
-is read with `LostItem.find({ reportedBy: student._id })`.
+**Student** — `fullName`, `email` (unique), `department`, `contactNumber`
 
-## 8. How to run
+**LostItem** — `itemName`, `category`, `description`, `lastSeenLocation`,
+`dateLost`, `status` (Lost/Found, default Lost), `reportedBy`→Student
 
-```bash
-npm install
-npm start
-```
+**FoundItem** — `itemName`, `category`, `description`, `foundLocation`,
+`dateFound`, `status` (Available/Returned, default Available), `reportedBy`→Student
 
-Server logs `MongoDB connected (database: campusLostFound)` and
-`CampusFind running at http://localhost:3000` on success.
+**Claim** — `foundItemId`→FoundItem, `claimedBy`→Student, `reason` (min 5 chars),
+`status` (Pending/Approved/Rejected, default Pending), `createdAt` (auto timestamp)
+Unique compound index on `{foundItemId, claimedBy}` — one claim per student per item.
 
-## 9. Phase 1 demonstration
+---
 
-See `PHASE1_SUBMISSION.md` for a step-by-step demo script and the full feature
-list.
+## Claim workflow (Phase 2)
+
+1. A student opens a found-item detail page and submits a claim with a reason.
+2. The claim is saved with status **Pending**.
+3. The student who *reported* the found item visits the detail page and approves
+   or rejects each claim.
+4. On **Approve**: the found item's status is atomically set to **Returned**
+   (conditional on it still being Available — concurrent approvals are prevented).
+5. Once an item is Returned, no new claims can be submitted and no further
+   approvals are possible.
+
+### Business rules enforced server-side (never just in the UI)
+
+- Only the item's reporter (`reportedBy`) may approve/reject claims.
+- A student cannot claim an item they themselves reported.
+- One claim per student per item (application check + unique DB index).
+- A Returned item blocks new claims and further approvals.
+- Only Pending claims can be transitioned.
+- `$set: { status }` — safe update; no other claim fields are overwritten.
+
+---
+
+## Phase 2 demo steps (for evaluation)
+
+See `PHASE2_TESTS.md` for the full test matrix. Minimum live demo:
+
+1. Register two students (A = reporter, B = claimant).
+2. Student A reports a found item → status **Available**.
+3. Student B submits a claim with a reason → status **Pending**.
+4. Try to submit the same claim again → duplicate error.
+5. Student A approves the claim → item becomes **Returned**, claim becomes **Approved**.
+6. Try to claim the returned item → blocked.
+7. Try to approve via a different `actingStudentId` → unauthorized error.
+
+---
 
 ## Project structure
 
 ```
 campus-lost-found/
-├── index.js                 # Express app + MongoDB connection
+├── index.js                  # Express app + MongoDB + method-override
 ├── package.json
-├── .env                     # your credentials (gitignored)
-├── .env.example             # template
+├── .env                      # credentials (gitignored)
+├── .env.example
 ├── .gitignore
 ├── README.md
 ├── PHASE1_SUBMISSION.md
+├── PHASE2_TESTS.md
 ├── models/
 │   ├── Student.js
 │   ├── LostItem.js
-│   └── FoundItem.js
+│   ├── FoundItem.js
+│   └── Claim.js              # Phase 2
 ├── routes/
 │   ├── studentRoutes.js
 │   ├── lostItemRoutes.js
-│   └── foundItemRoutes.js
+│   ├── foundItemRoutes.js    # updated Phase 2 (claims POST + PATCH)
+│   └── claimRoutes.js        # Phase 2 (PATCH /claims/:id/status)
 ├── views/
 │   ├── partials/
 │   │   ├── header.ejs
@@ -173,11 +171,11 @@ campus-lost-found/
 │   ├── lost-items.ejs
 │   ├── lost-item-form.ejs
 │   ├── lost-item-details.ejs
-│   ├── found-items.ejs
+│   ├── found-items.ejs       # updated (error flash)
 │   ├── found-item-form.ejs
-│   ├── found-item-details.ejs
+│   ├── found-item-details.ejs  # updated (claim form + claims list)
 │   ├── 404.ejs
 │   └── error.ejs
 └── public/
-    └── styles.css
+    └── styles.css            # updated (claim styles)
 ```

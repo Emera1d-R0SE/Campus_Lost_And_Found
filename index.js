@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 
 const app = express();
@@ -26,10 +27,16 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// HTML forms can only GET/POST. method-override lets a hidden _method field
+// (or ?_method=) upgrade a POST to PATCH/PUT/DELETE so the Phase 2 claim-approval
+// and item-status routes can be triggered from the UI.
+app.use(methodOverride('_method'));
+
 // Routes
 app.use('/', require('./routes/studentRoutes'));
 app.use('/', require('./routes/lostItemRoutes'));
 app.use('/', require('./routes/foundItemRoutes'));
+app.use('/', require('./routes/claimRoutes'));
 
 // Home page
 app.get('/', (req, res) => {
