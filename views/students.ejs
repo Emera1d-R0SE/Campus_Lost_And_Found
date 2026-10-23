@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Registered Students</h1>
+    <p class="muted">Profiles created through the registration form.</p>
+  </div>
+  <a href="/students/new" class="btn">+ Register student</a>
+</div>
+
+<% if (students.length === 0) { %>
+  <div class="empty-state">
+    <span class="empty-icon">🎓</span>
+    <h2>No students registered yet</h2>
+    <p>Register a student profile to start reporting lost or found items.</p>
+    <a href="/students/new" class="btn">Register the first student</a>
+  </div>
+<% } else { %>
+  <div class="grid">
+    <% students.forEach(function(s) { %>
+      <a href="/students/<%= s._id %>" class="card">
+        <span class="card-icon">🎓</span>
+        <h3><%= s.fullName %></h3>
+        <p class="muted"><%= s.department %></p>
+        <p class="email-text"><%= s.email %></p>
+        <p class="muted small">📞 <%= s.contactNumber %></p>
+        <span class="card-link">View profile →</span>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

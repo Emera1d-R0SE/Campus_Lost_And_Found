@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= typeof title !== 'undefined' ? title : 'CampusFind' %></title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="/" class="brand">Campus<span>Find</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true" />
+      <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+      <nav class="main-nav">
+        <a href="/">Home</a>
+        <a href="/lost-items">Lost Items</a>
+        <a href="/found-items">Found Items</a>
+        <a href="/students">Students</a>
+        <a href="/students/new" class="link-strong">Register</a>
+        <a href="/lost-items/new" class="btn btn-small">Report Lost</a>
+        <a href="/found-items/new" class="btn btn-small btn-outline">Report Found</a>
+      </nav>
+    </div>
+  </header>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="flash flash-success container">
+      <strong>✓</strong> <%= success %>
+    </div>
+  <% } %>
+
+  <main class="container page">

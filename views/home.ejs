@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Lost something on campus? <br />Or found something that isn't yours?</h1>
+    <p class="lead">
+      CampusFind lets students report lost belongings, register items they've found,
+      and keep a clear record of what has been returned — all in one place.
+    </p>
+    <div class="hero-actions">
+      <a href="/lost-items/new" class="btn">Report a lost item</a>
+      <a href="/found-items/new" class="btn btn-outline">Report a found item</a>
+    </div>
+  </div>
+</section>
+
+<section class="cards">
+  <a href="/lost-items" class="card">
+    <span class="card-icon">🔍</span>
+    <h3>Lost Items</h3>
+    <p>Browse things students have reported missing and see where they were last seen.</p>
+    <span class="card-link">View lost items →</span>
+  </a>
+  <a href="/found-items" class="card">
+    <span class="card-icon">📦</span>
+    <h3>Found Items</h3>
+    <p>See items handed in by others and check if something you lost has turned up.</p>
+    <span class="card-link">View found items →</span>
+  </a>
+  <a href="/students" class="card">
+    <span class="card-icon">🎓</span>
+    <h3>Students</h3>
+    <p>Register a profile or view a student's reported lost and found items.</p>
+    <span class="card-link">View students →</span>
+  </a>
+</section>
+
+<section class="how">
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><strong>Register once.</strong> Create your student profile with your college email.</li>
+    <li><strong>Report.</strong> Add lost or found items with a location, date, and description.</li>
+    <li><strong>Browse.</strong> Search and filter the lists to find a match.</li>
+  </ol>
+</section>
+
+<%- include('partials/footer') %>

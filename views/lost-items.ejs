@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Lost Items</h1>
+    <p class="muted">Items reported missing by students.</p>
+  </div>
+  <a href="/lost-items/new" class="btn">+ Report lost item</a>
+</div>
+
+<form class="filter-bar" method="GET" action="/lost-items">
+  <div class="field grow">
+    <label for="q">Search by item name</label>
+    <input type="text" id="q" name="q" value="<%= filters.q %>" placeholder="e.g. water bottle" />
+  </div>
+  <div class="field">
+    <label for="category">Category</label>
+    <select id="category" name="category">
+      <option value="">All categories</option>
+      <option value="Electronics" <%= filters.category === 'Electronics' ? 'selected' : '' %>>Electronics</option>
+      <option value="Accessories" <%= filters.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+      <option value="Clothing" <%= filters.category === 'Clothing' ? 'selected' : '' %>>Clothing</option>
+      <option value="Documents" <%= filters.category === 'Documents' ? 'selected' : '' %>>Documents</option>
+      <option value="Keys" <%= filters.category === 'Keys' ? 'selected' : '' %>>Keys</option>
+      <option value="Wallet" <%= filters.category === 'Wallet' ? 'selected' : '' %>>Wallet</option>
+      <option value="Bag" <%= filters.category === 'Bag' ? 'selected' : '' %>>Bag</option>
+      <option value="Other" <%= filters.category === 'Other' ? 'selected' : '' %>>Other</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="location">Last-seen location</label>
+    <input type="text" id="location" name="location" value="<%= filters.location %>" placeholder="e.g. Library" />
+  </div>
+  <div class="field filter-actions">
+    <button type="submit" class="btn btn-small">Filter</button>
+    <a href="/lost-items" class="btn btn-small btn-link">Clear</a>
+  </div>
+</form>
+
+<% if (lostItems.length === 0) { %>
+  <div class="empty-state">
+    <span class="empty-icon">🔍</span>
+    <h2>No lost items found</h2>
+    <p>
+      <% if (filters.q || filters.category || filters.location) { %>
+        No lost items match your search. Try clearing the filters.
+      <% } else { %>
+        No lost items have been reported yet.
+      <% } %>
+    </p>
+    <a href="/lost-items/new" class="btn">Report a lost item</a>
+  </div>
+<% } else { %>
+  <div class="grid">
+    <% lostItems.forEach(function(it) { %>
+      <a href="/lost-items/<%= it._id %>" class="card">
+        <span class="badge badge-<%= it.status === 'Lost' ? 'warn' : 'ok' %>"><%= it.status %></span>
+        <h3><%= it.itemName %></h3>
+        <p class="muted"><%= it.category %></p>
+        <p>Last seen: <strong><%= it.lastSeenLocation %></strong></p>
+        <p class="muted small">Lost on <%- include('partials/date', { d: it.dateLost }) %></p>
+        <p class="muted small">
+          Reported by:
+          <% if (it.reportedBy) { %>
+            <a href="/students/<%= it.reportedBy._id %>"><%= it.reportedBy.fullName %></a>
+          <% } else { %>
+            Unknown student
+          <% } %>
+        </p>
+        <span class="card-link">View details →</span>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

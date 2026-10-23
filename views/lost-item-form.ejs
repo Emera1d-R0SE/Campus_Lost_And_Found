@@ -1,0 +1,82 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Report a Lost Item</h1>
+    <p class="muted">Help others spot what you've lost.</p>
+  </div>
+  <a href="/lost-items" class="btn btn-outline">← Back to lost items</a>
+</div>
+
+<div class="form-wrap">
+  <% if (error) { %>
+    <div class="flash flash-error">
+      <strong>!</strong> <%= error %>
+    </div>
+  <% } %>
+
+  <% if (!students || students.length === 0) { %>
+    <div class="empty-state">
+      <span class="empty-icon">🎓</span>
+      <h2>No students registered yet</h2>
+      <p>You need a student profile before you can report an item.</p>
+      <a href="/students/new" class="btn">Register a student first</a>
+    </div>
+  <% } else { %>
+    <form action="/lost-items" method="POST" class="form" novalidate>
+      <div class="field">
+        <label for="reportedBy">Reporting student <span class="req">*</span></label>
+        <select id="reportedBy" name="reportedBy" required>
+          <option value="">— Select a student —</option>
+          <% students.forEach(function(s) { %>
+            <option value="<%= s._id %>" <%= String(values.reportedBy) === String(s._id) ? 'selected' : '' %>>
+              <%= s.fullName %> · <%= s.department %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="itemName">Item name <span class="req">*</span></label>
+        <input type="text" id="itemName" name="itemName" value="<%= values.itemName || '' %>" required />
+      </div>
+
+      <div class="field">
+        <label for="category">Category <span class="req">*</span></label>
+        <select id="category" name="category" required>
+          <option value="">— Select a category —</option>
+          <option value="Electronics" <%= values.category === 'Electronics' ? 'selected' : '' %>>Electronics</option>
+          <option value="Accessories" <%= values.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+          <option value="Clothing" <%= values.category === 'Clothing' ? 'selected' : '' %>>Clothing</option>
+          <option value="Documents" <%= values.category === 'Documents' ? 'selected' : '' %>>Documents</option>
+          <option value="Keys" <%= values.category === 'Keys' ? 'selected' : '' %>>Keys</option>
+          <option value="Wallet" <%= values.category === 'Wallet' ? 'selected' : '' %>>Wallet</option>
+          <option value="Bag" <%= values.category === 'Bag' ? 'selected' : '' %>>Bag</option>
+          <option value="Other" <%= values.category === 'Other' ? 'selected' : '' %>>Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="lastSeenLocation">Last-seen location <span class="req">*</span></label>
+        <input type="text" id="lastSeenLocation" name="lastSeenLocation" value="<%= values.lastSeenLocation || '' %>" placeholder="e.g. Library, 2nd floor" required />
+      </div>
+
+      <div class="field">
+        <label for="dateLost">Date lost <span class="req">*</span></label>
+        <input type="date" id="dateLost" name="dateLost" value="<%= values.dateLost || '' %>" required />
+      </div>
+
+      <div class="field">
+        <label for="description">Description <span class="req">*</span></label>
+        <textarea id="description" name="description" rows="4" required><%= values.description || '' %></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn">Submit report</button>
+        <a href="/lost-items" class="btn btn-link">Cancel</a>
+      </div>
+    </form>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

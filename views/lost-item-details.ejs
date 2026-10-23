@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1><%= item.itemName %></h1>
+    <p class="muted">Lost-item report</p>
+  </div>
+  <a href="/lost-items" class="btn btn-outline">← Back to lost items</a>
+</div>
+
+<section class="detail-card">
+  <span class="badge badge-<%= item.status === 'Lost' ? 'warn' : 'ok' %>"><%= item.status %></span>
+
+  <table class="info-table">
+    <tr>
+      <th>Category</th>
+      <td><%= item.category %></td>
+    </tr>
+    <tr>
+      <th>Last-seen location</th>
+      <td><%= item.lastSeenLocation %></td>
+    </tr>
+    <tr>
+      <th>Date lost</th>
+      <td><%- include('partials/date', { d: item.dateLost }) %></td>
+    </tr>
+    <tr>
+      <th>Report ID</th>
+      <td><code><%= item._id %></code></td>
+    </tr>
+    <tr>
+      <th>Reported by</th>
+      <td>
+        <% if (item.reportedBy) { %>
+          <a href="/students/<%= item.reportedBy._id %>"><%= item.reportedBy.fullName %></a>
+          <span class="muted small">(<%= item.reportedBy.department %> · <%= item.reportedBy.email %>)</span>
+        <% } else { %>
+          <span class="muted">Unknown student</span>
+        <% } %>
+      </td>
+    </tr>
+    <tr>
+      <th>Reported on</th>
+      <td><%- include('partials/date', { d: item.createdAt }) %></td>
+    </tr>
+  </table>
+
+  <div class="description-block">
+    <h3>Description</h3>
+    <p><%= item.description %></p>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

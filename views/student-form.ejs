@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1>Register a Student</h1>
+    <p class="muted">Each student gets a unique MongoDB ID used as the identifier.</p>
+  </div>
+  <a href="/students" class="btn btn-outline">← Back to students</a>
+</div>
+
+<div class="form-wrap">
+  <% if (error) { %>
+    <div class="flash flash-error">
+      <strong>!</strong> <%= error %>
+    </div>
+  <% } %>
+
+  <form action="/students" method="POST" class="form" novalidate>
+    <div class="field">
+      <label for="fullName">Full name <span class="req">*</span></label>
+      <input type="text" id="fullName" name="fullName" value="<%= student.fullName || '' %>" required />
+    </div>
+
+    <div class="field">
+      <label for="email">College email <span class="req">*</span></label>
+      <input type="email" id="email" name="email" value="<%= student.email || '' %>" required />
+    </div>
+
+    <div class="field">
+      <label for="department">Department <span class="req">*</span></label>
+      <input type="text" id="department" name="department" value="<%= student.department || '' %>" placeholder="e.g. Computer Science" required />
+    </div>
+
+    <div class="field">
+      <label for="contactNumber">Contact number <span class="req">*</span></label>
+      <input type="text" id="contactNumber" name="contactNumber" value="<%= student.contactNumber || '' %>" required />
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn">Create profile</button>
+      <a href="/students" class="btn btn-link">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

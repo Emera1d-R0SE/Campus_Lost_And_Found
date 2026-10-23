@@ -1,0 +1,74 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <div>
+    <h1><%= student.fullName %></h1>
+    <p class="muted">Student profile</p>
+  </div>
+  <a href="/students" class="btn btn-outline">← Back to students</a>
+</div>
+
+<section class="detail-card">
+  <table class="info-table">
+    <tr>
+      <th>Student ID</th>
+      <td><code><%= student._id %></code></td>
+    </tr>
+    <tr>
+      <th>Department</th>
+      <td><%= student.department %></td>
+    </tr>
+    <tr>
+      <th>Email</th>
+      <td><%= student.email %></td>
+    </tr>
+    <tr>
+      <th>Contact number</th>
+      <td><%= student.contactNumber %></td>
+    </tr>
+    <tr>
+      <th>Registered on</th>
+      <td><%- include('partials/date', { d: student.createdAt }) %></td>
+    </tr>
+  </table>
+</section>
+
+<section class="relation-section">
+  <h2>Lost items reported by <%= student.fullName %></h2>
+  <% if (lostItems.length === 0) { %>
+    <p class="muted">This student has not reported any lost items yet.</p>
+  <% } else { %>
+    <ul class="mini-list">
+      <% lostItems.forEach(function(it) { %>
+        <li>
+          <a href="/lost-items/<%= it._id %>">
+            <span class="mini-title"><%= it.itemName %></span>
+            <span class="mini-sub">Last seen: <%= it.lastSeenLocation %> · <%- include('partials/date', { d: it.dateLost }) %></span>
+          </a>
+          <span class="badge badge-<%= it.status === 'Lost' ? 'warn' : 'ok' %>"><%= it.status %></span>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</section>
+
+<section class="relation-section">
+  <h2>Found items reported by <%= student.fullName %></h2>
+  <% if (foundItems.length === 0) { %>
+    <p class="muted">This student has not reported any found items yet.</p>
+  <% } else { %>
+    <ul class="mini-list">
+      <% foundItems.forEach(function(it) { %>
+        <li>
+          <a href="/found-items/<%= it._id %>">
+            <span class="mini-title"><%= it.itemName %></span>
+            <span class="mini-sub">Found at: <%= it.foundLocation %> · <%- include('partials/date', { d: it.dateFound }) %></span>
+          </a>
+          <span class="badge badge-<%= it.status === 'Available' ? 'ok' : 'muted' %>"><%= it.status %></span>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</section>
+
+<%- include('partials/footer') %>
